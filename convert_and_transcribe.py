@@ -13,10 +13,11 @@ def extract_audio(mp4_path, mp3_path):
     print(f"音声抽出開始: {mp3_path}")
     command = [
         "ffmpeg",
-        "-i", mp4_path,      # 入力MP4
-        "-q:a", "0",         # 高音質
-        "-ac", "1",          # モノラル
-        "-vn",               # 映像なし
+        "-y",               # 強制上書き
+        "-i", mp4_path,     # 入力MP4
+        "-q:a", "5",        # 中音質
+        "-ac", "1",         # モノラル
+        "-vn",              # 映像なし
         mp3_path
     ]
     subprocess.run(command, check=True)
@@ -26,7 +27,7 @@ def transcribe_audio(mp3_path, output_txt):
     """Whisperを使用してMP3を文字起こし"""
     try:
         model = whisper.load_model("medium")  # モデル読み込み
-        result = model.transcribe(mp3_path, language="ja", verbose=True)  # 日本語指定
+        result = model.transcribe(mp3_path, language="ja", verbose=True, initial_prompt="です。ます。でした。")  # 日本語指定
 
         with open(output_txt, "w", encoding="utf-8") as f:
             f.write(result["text"])
