@@ -20,20 +20,20 @@ def extract_audio(mp4_path, mp3_path):
     print(f"MP3抽出: {mp4_path} to {mp3_path}")
     command = [
         "ffmpeg", "-vn", "-i", mp4_path,
-        "-c:a", "aac", "-b:a", "192k", "-ac", "1",  # 特許リスクのないAACエンコーダを使用
-        "temp.m4a", "-y"  # 一時的なAACファイル
+        "-c:a", "pcm_s16le", "-ac", "1", "-ar", "44100",  # AACを回避し、PCM(WAV)に変換
+        "temp.wav", "-y"  # 一時的なWAVファイル
     ]
     subprocess.run(command)
 
     command = [
-        "ffmpeg", "-i", "temp.m4a",
+        "ffmpeg", "-i", "temp.wav",
         "-acodec", "libmp3lame", "-b:a", "128k", "-ac", "1",
         mp3_path, "-y"
     ]
     subprocess.run(command)
 
     # 一時ファイル削除
-    os.remove("temp.m4a")
+    os.remove("temp.wav")
     print(f"MP3抽出完了: {mp3_path}")
 
 def transcribe_audio(mp3_path, txt_path, mtg_language):
